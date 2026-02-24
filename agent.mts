@@ -1,30 +1,35 @@
-import OpenAI from 'openai';
+import { QuizAgent } from './quizAgent';
 
-export class PromptAgent {
-    private client: OpenAI;
-    private systemPrompt: string;
+// Replace with your actual OpenAI API Key
+const API_KEY = 'YOUR_OPENAI_API_KEY_HERE';
+const agent = new QuizAgent(API_KEY);
 
-    constructor(apiKey: string) {
-        this.client = new OpenAI({ apiKey });
-        this.systemPrompt = `
-            Act as a Senior Prompt Engineer.
-            Your goal is to transform the user's raw input into a high-quality, structured prompt.
-            Format the output with: Role, Context, Task, and Constraints.
-        `;
-    }
+async function runGenerator() {
+    const topic = "Modern Web Development";
+    const questionCount = 3;
 
-    async improve(userInput: string): Promise<string | null> {
-        try {
-            const response = await this.client.chat.completions.create({
-                model: "gpt-4o", // Upewnij się, że masz dostęp do tego modelu lub zmień na gpt-3.5-turbo
-                messages: [
-                    { role: "system", content: this.systemPrompt },
-                    { role: "user", content: userInput }
-                ],
+    console.log(`\n🚀 Generating a ${topic} quiz... Please wait.`);
+
+    const quiz = await agent.generateQuiz(topic, questionCount);
+
+    if (quiz) {
+        console.log(`\n=== QUIZ: ${quiz.title} ===`);
+        console.log(`Topic: ${quiz.topic}\n`);
+
+        quiz.questions.forEach((q, index) => {
+            console.log(`${index + 1}. ${q.question}`);
+            q.options.forEach((opt, i) => {
+                const label = String.fromCharCode(65 + i); // A, B, C, D
+                console.log(`   ${label}) ${opt}`);
             });
-            return response.choices[0].message.content;
-        } catch (error: any) {
-            return `Error: ${error.message}`;
-        }
+            console.log(`   ✅ Correct Answer: ${q.correctAnswer}`);
+            console.log(`   💡 Explanation: ${q.explanation}\n`);
+        });
+        
+        console.log("--- End of Quiz ---");
+    } else {
+        console.log("❌ Failed to generate quiz. Check your API key or connection.");
     }
 }
+
+runGenerator();
