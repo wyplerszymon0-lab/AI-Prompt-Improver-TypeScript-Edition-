@@ -16,7 +16,7 @@ export class PromptAgent {
     async improve(userInput: string): Promise<string | null> {
         try {
             const response = await this.client.chat.completions.create({
-                model: "gpt-4o", // Upewnij się, że masz dostęp do tego modelu lub zmień na gpt-3.5-turbo
+                model: "gpt-4o"
                 messages: [
                     { role: "system", content: this.systemPrompt },
                     { role: "user", content: userInput }
