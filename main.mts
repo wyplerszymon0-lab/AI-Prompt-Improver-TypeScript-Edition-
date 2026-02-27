@@ -27,7 +27,7 @@ const askQuestion = () => {
         console.log(result);
         console.log("------------------------\n");
 
-        askQuestion(); // Zapętlone pytanie
+        askQuestion(); 
     });
 };
 
